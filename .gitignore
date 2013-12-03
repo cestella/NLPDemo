@@ -1,6 +1,5 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
+scratch
+target
+training
+*.iml
+2007*.xml
