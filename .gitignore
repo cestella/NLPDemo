@@ -3,3 +3,4 @@ target
 training
 *.iml
 2007*.xml
+dependency-reduced-pom.xml
