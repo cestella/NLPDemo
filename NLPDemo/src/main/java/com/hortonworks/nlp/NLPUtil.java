@@ -94,7 +94,7 @@ public class NLPUtil
                 // this is the POS tag of the token
                 String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                 // this is the lemma of the token
-                String lemma = token.get(CoreAnnotations.LemmaAnnotation.class);
+                String lemma = token.get(CoreAnnotations.LemmaAnnotation.class).toLowerCase();
                 if(pos.startsWith("N") || pos.startsWith("V"))
                 {
                     Word w = new Word(word, lemma, pos);
