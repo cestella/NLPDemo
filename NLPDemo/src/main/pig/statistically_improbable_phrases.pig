@@ -12,5 +12,5 @@ SIP = foreach CODE_GRP {
   DOCS = foreach SENTENCES generate doc;
   generate group as diag_code,GET_SIP(DOCS) as sips;
 };
-
+rmf $output
 STORE SIP into '$output' using PigStorage('\u0001');
