@@ -16,6 +16,12 @@
       <useDefaultExcludes>true</useDefaultExcludes>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/src/main/bash</directory>
+      <outputDirectory>/</outputDirectory>
+      <useDefaultExcludes>true</useDefaultExcludes>
+    </fileSet>
+
+    <fileSet>
       <directory>${project.basedir}/target</directory>
       <includes>
         <include>NLPDemo-1.0-SNAPSHOT.jar</include>

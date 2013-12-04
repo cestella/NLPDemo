@@ -19,6 +19,7 @@ import java.util.*;
  */
 public class NLPUtil
 {
+
     public static SortedSet<Bigram<String>> getStatisticallyImprobableBigrams( Iterable<List<Bigram<Word>> > sentences
                                                                              , Predicate<Bigram<Word>> filter
                                                                              , Statistics<Bigram<String>> bigramStatistics
@@ -29,14 +30,23 @@ public class NLPUtil
         SortedSet<Bigram<String>> ret = new TreeSet<Bigram<String>>(
                    new Comparator<Bigram<String>>() {
                        public int compare(Bigram<String> o1, Bigram<String> o2) {
-                           return Double.compare(o1.getScore(), o2.getScore());
+                           return -1*Double.compare(o1.getScore(), o2.getScore());
                        }
                    }
                                                                     );
+        HashSet<Bigram<Word>> bigramCache = new HashSet<Bigram<Word>>();
         for(List<Bigram<Word>> sentence : sentences)
         {
             for(Bigram<Word> wordBigram : Iterables.filter(sentence, filter))
             {
+                if(bigramCache.contains(wordBigram))
+                {
+                    continue;
+                }
+                else
+                {
+                    bigramCache.add(wordBigram);
+                }
                 String left = wordBigram.getLeft().getLemma();
                 String right = wordBigram.getRight().getLemma();
                 Bigram<String> bigram = new Bigram<String>(left, right, -1);
@@ -85,9 +95,12 @@ public class NLPUtil
                 String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                 // this is the lemma of the token
                 String lemma = token.get(CoreAnnotations.LemmaAnnotation.class);
-                Word w = new Word(word, lemma, pos);
-                unigramStatistics.add(lemma);
-                ret.add(w);
+                if(pos.startsWith("N") || pos.startsWith("V"))
+                {
+                    Word w = new Word(word, lemma, pos);
+                    unigramStatistics.add(lemma);
+                    ret.add(w);
+                }
             }
         }
         return ret;
