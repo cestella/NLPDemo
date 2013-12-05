@@ -1,7 +1,7 @@
 Natural Language Processing: A Lab
 =========
 
-#Introduction
+##Introduction
 
 > It is surprisingly hard for computers to handle free text as smoothly
 > and effectively as humans do. So far, the results of the numerous
@@ -28,7 +28,7 @@ Some of the reasons for this include:
 In the course of this lab, you will be exposed to a NLP problem and
 asked to solve it using open source NLP libraries and Pig/Hadoop.
 
-#Problem Statement
+##Problem Statement
 
 When analyzing medical reports, it's important to understand which sets
 of words are associated with a particular disease. This helps pick out
@@ -76,5 +76,5 @@ science and natural language processing can only take you so far and
 work best when their output is comprehensible *and* serves to assist a
 human to make the final decision.
 
-#Instructions
+##Instructions
 
