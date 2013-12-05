@@ -89,14 +89,17 @@ The assumption is that you have installed:
 ### Getting the Code and setting up the Development Environment
 From the terminal, cd into the workspace of your choice and pull down
 the code for this project:
-  git clone https://github.com/cestella/NLPDemo.git
-  cd NLPDemo/NLPDemo
+
+	git clone https://github.com/cestella/NLPDemo.git
+	cd NLPDemo/NLPDemo
 
 Now, create your IDE metadata using maven for Eclipse:
-  mvn eclipse:eclipse -DdownloadSources -DdownloadJavadocs
+
+	mvn eclipse:eclipse -DdownloadSources -DdownloadJavadocs
 
 or Intellij:
-  mvn idea:idea -DdownloadSources -DdownloadJavadocs
+
+	mvn idea:idea -DdownloadSources -DdownloadJavadocs
 
 From there, import the project into your respective IDE as an existing
 Java project.  Note: You can also import the maven project directly.
@@ -105,11 +108,11 @@ Java project.  Note: You can also import the maven project directly.
 
 Complete the following exercises:
 
-# The NLPUtil class is the main work-horse for the actual NLP work.  You
+1. The NLPUtil class is the main work-horse for the actual NLP work.  You
 can use this class to complete the Pig UDF GET_SIP, which emits a bag of
 tuples which are the statistically improbable pairs of words and their
 rank. 
-# (Bonus) The approach to find statistically improbable phrases uses
+2. (Bonus) The approach to find statistically improbable phrases uses
   [Scaled Mutual
 Information](http://matpalm.com/blog/2011/10/22/collocations_1/).  There
 are a number of other approaches that might do better.  Investigate
@@ -117,26 +120,29 @@ alternatives (hint: start
 [here](http://matpalm.com/blog/2011/11/05/collocations_2/) and
 [here](http://tdunning.blogspot.com/2008/03/surprise-and-coincidence.html)
 ).
-# (Bonus) Expand to trigrams
+3. (Bonus) Expand to trigrams
 
 ### Building the Project
 From the NLPDemo/NLPDemo directory:
-  mvn package
+
+	mvn package
 
 This will bundle the scripts, data and jar file into
 NLPDemo-1.0-SNAPSHOT-archive.tar.gz in the target directory.
 We now need to upload this to the sandbox:
-  ssh root@$sandbox_ip "mkdir ~/nlpdemo"
-  scp target/NLPDemo-1.0-SNAPSHOT-archive.tar.gz root@$sandbox_ip:~/nlpdemo
+
+	ssh root@$sandbox_ip "mkdir ~/nlpdemo"
+	scp target/NLPDemo-1.0-SNAPSHOT-archive.tar.gz root@$sandbox_ip:~/nlpdemo
 
 
 ### Preparing the Data (needs to be done once)
 
 Now, ssh into the sandbox
-  ssh root@$sandbox_ip
-  cd ~/nlpdemo
-  tar xzvf NLPDemo-1.0-SNAPSHOT-archive.tar.gz
-  ./ingest.sh /user/root/nlp
+
+	ssh root@$sandbox_ip
+	cd ~/nlpdemo
+	tar xzvf NLPDemo-1.0-SNAPSHOT-archive.tar.gz
+	./ingest.sh /user/root/nlp
 
 This will put the sentence data in /user/root/nlp/data
 
@@ -146,16 +152,18 @@ Now, we need to execute the pig script which generates the statistically
 improbable phrases for each diagnosis code.
 
 From the sandbox in ~/nlpdemo/ directory
-  cd pig
-  pig -param input=nlp/data -param output=nlp/output ./statistically_improbable_phrases.pig
-  cd ..
-  hadoop fs -getmerge nlp/output sips.dat
+
+	cd pig
+	pig -param input=nlp/data -param output=nlp/output ./statistically_improbable_phrases.pig
+	cd ..
+	hadoop fs -getmerge nlp/output sips.dat
 
 ### Reviewing the Result
 
 Now, let's review some results by looking at the list of all diagnosis
 codes with their descriptions:
-  ./output_codes.sh ./sips.dat
+
+	./output_codes.sh ./sips.dat
 
 <pre>
 462 -- Acute pharyngitis
@@ -170,7 +178,8 @@ codes with their descriptions:
 </pre>
 
 Now, pick one, say 486, and look at the summary:
-  ./code_summary.sh 486 ./sips.dat
+
+	./code_summary.sh 486 ./sips.dat
 
 <pre>
 DIAG_CODE
