@@ -108,19 +108,23 @@ Java project.  Note: You can also import the maven project directly.
 
 Complete the following exercises:
 
-1. The NLPUtil class is the main work-horse for the actual NLP work.  You
+1. The NLPUtil class is the main work-horse for the actual NLP work and heavily utilizes the [Stanford CoreNLP project](http://nlp.stanford.edu/software/corenlp.shtml).  You
 can use this class to complete the Pig UDF GET_SIP, which emits a bag of
-tuples which are the statistically improbable pairs of words and their
+tuples representing the statistically improbable pairs of words and their
 rank. 
-2. (Bonus) The approach to find statistically improbable phrases uses
+2. The pig script `statistically_improbable_phrases.pig` loads the data and generates the statistically improbable phrases.  Fill in the missing piece that calls the UDF you completed in step 1.
+3. (Bonus) The approach to find statistically improbable phrases uses
   [Scaled Mutual
-Information](http://matpalm.com/blog/2011/10/22/collocations_1/).  There
+Information](http://matpalm.com/blog/2011/10/22/collocations_1/).  The implementation of which is
+located in the `ScaledMutualInformationScorer` class which implements `Scorer`.  There
 are a number of other approaches that might do better.  Investigate
 alternatives (hint: start
 [here](http://matpalm.com/blog/2011/11/05/collocations_2/) and
 [here](http://tdunning.blogspot.com/2008/03/surprise-and-coincidence.html)
-).
-3. (Bonus) Right now we ignore all non-noun or verb words in sentences, but we might do better by ignoring a set of very common verbs (like 'be' or 'have').  Integrate a [stopword list](http://en.wikipedia.org/wiki/Stop_words) by implementing a Guava Predicate to be passed into NLPUtil.getStatisticallyImprobableBigrams() as the filter argument which filters out common verbs.
+) and implement your own `Scorer`.
+4. (Bonus) Right now we ignore all non-noun or verb words in sentences, but we might do better by ignoring a set of very common verbs (like 'be' or 'have').  Integrate a [stopword list](http://en.wikipedia.org/wiki/Stop_words) by implementing a Guava Predicate to be passed into NLPUtil.getStatisticallyImprobableBigrams() as the filter argument which filters out common verbs.
+
+General hint: the remote branch `solution` contains my solution to 1 and 2.
 
 ### Building the Project
 From the NLPDemo/NLPDemo directory:
