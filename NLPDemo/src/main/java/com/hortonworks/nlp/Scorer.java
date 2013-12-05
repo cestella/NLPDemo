@@ -1,7 +1,7 @@
 package com.hortonworks.nlp;
 
 /**
- * Created with IntelliJ IDEA.
+ * Scorer interface to score bigrams given summary bigram/unigram statistics from a corpus of documents
  * User: cstella
  * Date: 12/3/13
  * Time: 9:37 AM

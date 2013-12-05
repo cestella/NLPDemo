@@ -11,15 +11,26 @@ import edu.stanford.nlp.util.CoreMap;
 import java.util.*;
 
 /**
- * Created with IntelliJ IDEA.
+ * The main utility class to do natural language processing.
  * User: cstella
  * Date: 12/2/13
  * Time: 11:03 PM
- * To change this template use File | Settings | File Templates.
  */
 public class NLPUtil
 {
 
+    /**
+     *  This function takes a takes a set of sentences along with the statistics of individual words (unigrams)
+     *  and pairs of words (bigrams) and creates a sorted list of unique bigrams ranked by their statistical improbability
+     *  based around the Scorer passed in.
+     *
+     * @param sentences An iterable containing lists of bigrams representing a sentence
+     * @param filter A predicate which determines whether a bigram is included or not
+     * @param bigramStatistics Bigram summary statistics
+     * @param unigramStatistics Unigram summary statistics
+     * @param scorer A scorer which will rank bigrams based on their statistical improbablility
+     * @return
+     */
     public static SortedSet<Bigram<String>> getStatisticallyImprobableBigrams( Iterable<List<Bigram<Word>> > sentences
                                                                              , Predicate<Bigram<Word>> filter
                                                                              , Statistics<Bigram<String>> bigramStatistics
@@ -27,6 +38,7 @@ public class NLPUtil
                                                                              , Scorer scorer
                                                                              )
     {
+        //Sort the bigrams in reverse-score order
         SortedSet<Bigram<String>> ret = new TreeSet<Bigram<String>>(
                    new Comparator<Bigram<String>>() {
                        public int compare(Bigram<String> o1, Bigram<String> o2) {
@@ -35,10 +47,14 @@ public class NLPUtil
                    }
                                                                     );
         HashSet<Bigram<Word>> bigramCache = new HashSet<Bigram<Word>>();
+
+        //for each sentence
         for(List<Bigram<Word>> sentence : sentences)
         {
+            //and each bigram in each sentence that is not filtered out
             for(Bigram<Word> wordBigram : Iterables.filter(sentence, filter))
             {
+                //if we haven't seen it before
                 if(bigramCache.contains(wordBigram))
                 {
                     continue;
@@ -47,6 +63,7 @@ public class NLPUtil
                 {
                     bigramCache.add(wordBigram);
                 }
+                //then score it add it to the sorted set
                 String left = wordBigram.getLeft().getLemma();
                 String right = wordBigram.getRight().getLemma();
                 Bigram<String> bigram = new Bigram<String>(left, right, -1);
@@ -57,6 +74,14 @@ public class NLPUtil
         return ret;
     }
 
+    /**
+     * Function which returns a list of bigrams for a sentence in the form of List<Word>.
+     * During which it updates the bigram statistics.  Note: the words are lemmatized.
+     *
+     * @param words list of words from a sentence
+     * @param bigramStatistics set of bigram statistics
+     * @return
+     */
     public static List<Bigram<Word>> getBigramsPerSentence(List<Word> words, Statistics<Bigram<String>> bigramStatistics)
     {
         List<Bigram<Word>> ret = new ArrayList<Bigram<Word>>();
@@ -70,6 +95,14 @@ public class NLPUtil
         return ret;
     }
 
+    /**
+     * Take a (possibly multiple sentence) text and parse a list of words that we're interested in.  This only considers
+     * Nouns and Verbs.  Also, the words are lemmatized.
+     *
+     * @param text
+     * @param unigramStatistics
+     * @return
+     */
     public static List<Word> parseSentence(String text, Statistics<String> unigramStatistics)
     {
         Properties props = new Properties();
@@ -95,6 +128,7 @@ public class NLPUtil
                 String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                 // this is the lemma of the token
                 String lemma = token.get(CoreAnnotations.LemmaAnnotation.class).toLowerCase();
+                //only consider nouns and verbs.  These POS tags are from the PennTree bank.
                 if(pos.startsWith("N") || pos.startsWith("V"))
                 {
                     Word w = new Word(word, lemma, pos);

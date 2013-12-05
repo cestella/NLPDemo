@@ -1,11 +1,12 @@
 package com.hortonworks.nlp;
 
 /**
- * Created with IntelliJ IDEA.
+ * Word container object.  Keeps track of the word, the lemmatized (i.e. stemmed) version of the word and the part of speech.
+ *
+ * NOTE: The part of speech is from the PennTree bank
  * User: cstella
  * Date: 12/2/13
  * Time: 11:04 PM
- * To change this template use File | Settings | File Templates.
  */
 public class Word
 {
@@ -19,8 +20,24 @@ public class Word
         this.partOfSpeech = partOfSpeech;
     }
 
+    /**
+     * The raw word
+     * @return
+     */
     public String getWord() { return word;}
+
+    /**
+     * The lemmatized version of the word.
+     * @return
+     */
     public String getLemma() { return lemma;}
+
+    /**
+     * The part of speech for the word.  This POS is taken from the PennTree bank.
+     * @see http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+     *
+     * @return
+     */
     public String getPartOfSpeech() { return partOfSpeech;}
 
     @Override

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
+ * Summary statistics for elements of type T.
  * User: cstella
  * Date: 12/2/13
  * Time: 11:52 PM

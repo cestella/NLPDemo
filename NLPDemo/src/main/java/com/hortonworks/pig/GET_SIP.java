@@ -1,6 +1,7 @@
 package com.hortonworks.pig;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.hortonworks.nlp.*;
@@ -11,10 +12,10 @@ import org.apache.pig.impl.logicalLayer.schema.Schema;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.SortedSet;
 
 /**
- * Created with IntelliJ IDEA.
+ * UDF to take a bag of documents and output a bag of statistically improbable bigrams.
+ *
  * User: cstella
  * Date: 12/3/13
  * Time: 2:22 PM
@@ -25,10 +26,24 @@ public class GET_SIP extends EvalFunc<DataBag>
     TupleFactory mTupleFactory = TupleFactory.getInstance();
     BagFactory mBagFactory = BagFactory.getInstance();
 
+    /**
+     * Convenience function to convert a Tuple whose first element is a document and converting it into a list of Bigrams
+     */
     private static class Converter implements Function<Tuple, List<Bigram<Word>> >
     {
         Statistics<Bigram<String>> bigramStatistics ;
         Statistics<String> unigramStatistics ;
+
+        /**
+         * Converter constructor.
+         *
+         * Note: this function is not stateless.
+         * Summary statistics are aggregated, so don't reuse instances of this class unless they're
+         * associated with the same dataset.
+         *
+         * @param bigramStatistics Summary statistics container for bigrams (updated when apply is called)
+         * @param unigramStatistics Summary statistics container for unigrams (updated when apply is called)
+         */
         public Converter( Statistics<Bigram<String>> bigramStatistics
                         , Statistics<String> unigramStatistics
         )
@@ -37,6 +52,12 @@ public class GET_SIP extends EvalFunc<DataBag>
             this.unigramStatistics = unigramStatistics;
         }
 
+        /**
+         *  Convert Tuple objects to lists of bigrams.
+         *
+         * @param input A tuple whose first element is a document to process
+         * @return A list of bigrams from the document contained in the first element of the input tuple
+         */
         public List<Bigram<Word>> apply(org.apache.pig.data.Tuple input) {
             List<Word> words = null;
             try {
@@ -50,11 +71,34 @@ public class GET_SIP extends EvalFunc<DataBag>
     }
 
     /**
-     * This callback method must be implemented by all subclasses. This
-     * is the method that will be invoked on every Tuple of a given dataset.
-     * Since the dataset may be divided up in a variety of ways the programmer
-     * should not make assumptions about state that is maintained between
-     * invocations of this method.
+     * Returns a sorted list of statistically improbable bigrams, sorted descending.
+     *
+     * @param listOfDocumentBigrams A list of lists of bigrams.  The inner list is the bigrams for a given document.
+     * @param scorer The scorer to use to determine ranking
+     * @param stopwordFilter The stopword filter applied to the bigram.
+     * @param bigramStatistics Summary statistics for bigrams across the whole set of documents in listOfDocumentBigrams
+     * @param unigramStatistics Summary statistics for words (aka unigrams) across the whole set of documents
+     * @return
+     */
+    public static Iterable<Bigram<String>> getStatisticallyImprobableBigrams(Iterable<List<Bigram<Word>>> listOfDocumentBigrams
+            , Scorer scorer
+            , Predicate<Bigram<Word>> stopwordFilter
+            , Statistics<Bigram<String>> bigramStatistics
+            , Statistics<String> unigramStatistics
+    )
+    {
+
+        return
+        NLPUtil.getStatisticallyImprobableBigrams( listOfDocumentBigrams
+                                                 , Predicates.<Bigram<Word>>alwaysTrue()
+                                                 , bigramStatistics
+                                                 , unigramStatistics
+                                                 , scorer
+                                                 );
+    }
+    /**
+     * This UDF takes in a tuple containing a bag of documents to compute the statistically
+     * improbable bigrams.
      *
      * @param input the Tuple to be processed.
      * @return result, of type T.
@@ -63,24 +107,54 @@ public class GET_SIP extends EvalFunc<DataBag>
     @Override
     public DataBag exec(Tuple input) throws IOException
     {
+
+        DataBag output = mBagFactory.newDefaultBag();
+        /*
+         * Bag of tuples, each tuple's first element contains a document.  The bag forms the document set
+         * that we are computing statistically improbable bigrams from.
+         */
+        DataBag inputBag = (DataBag)input.get(0);
+
+        /*
+         * Create summary statistics containers for this document set
+         */
         Statistics<Bigram<String>> bigramStatistics = new Statistics<Bigram<String>>();
         Statistics<String> unigramStatistics = new Statistics<String>();
+
+        /*
+         *  Convenience function to convert from tuples into lists of bigrams using NLPUtil
+         */
         Converter converter = new Converter(bigramStatistics,unigramStatistics);
+
+        /*
+         * Using the scaled mutual information scorer to determine ranking of bigrams
+         */
         Scorer scorer = new ScaledMutualInformationScorer();
-        DataBag output = mBagFactory.newDefaultBag();
-        DataBag inputBag = (DataBag)input.get(0);
+
+        //Currently no stopword filter is used
+        Predicate<Bigram<Word>> stopwordFilter = Predicates.<Bigram<Word>>alwaysTrue();
+
+        /*
+         * Convert the input bag of tuples into an iterable of bigram lists using the Converter function
+         */
+        Iterable<List<Bigram<Word>>> documentsAsBigramLists = Iterables.transform(inputBag, converter);
+
+        /**
+         * Now that we have the data processed and transformed into bigrams, we can figure out which of those
+         * bigrams are statistically important.
+         */
         Iterable<Bigram<String>> sips =
-                Iterables.limit(
-        NLPUtil.getStatisticallyImprobableBigrams( Iterables.transform(inputBag, converter)
-                                                 , Predicates.<Bigram<Word>>alwaysTrue()
+                getStatisticallyImprobableBigrams(documentsAsBigramLists
+                                                 , scorer
+                                                 , stopwordFilter
                                                  , bigramStatistics
                                                  , unigramStatistics
-                                                 , scorer
-                                                 )
-                , 10
-                )
-                ;
-        for(Bigram<String> sip : sips)
+                                                 );
+
+        /*
+         * Output the top 10 as tuples and add them to the bag.
+         */
+        for(Bigram<String> sip : Iterables.limit(sips, 10))
         {
             Tuple t = mTupleFactory.newTuple(3);
             t.set(0, sip.getLeft());
@@ -90,6 +164,14 @@ public class GET_SIP extends EvalFunc<DataBag>
         }
         return output;
     }
+
+    /**
+     * Create the schema.  The output is a bag of tuples, each of which have 3 entries:
+     * left, right and score, which forms a ranked bigram.
+     *
+     * @param input
+     * @return
+     */
     public Schema outputSchema(Schema input) {
         try
         {
