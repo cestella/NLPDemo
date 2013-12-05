@@ -51,7 +51,9 @@ pre-processed this into a Ctrl-A separated
 We are going to analyze this data to find statistically improbable pairs
 of words.  By which, I mean within the set of sentences associated with
 a given diagnosis, pairs of words that appear nearby more statistically
-likely than apart.
+likely than apart.  We are going to do this analysis by creating a
+custom Pig UDF which takes the sentences from a given diagnosis code and
+outputs the statistically improbable pairs of words.
 
 For instance, given the code 486, which is the diagnosis code for
 pneumonia, consider the following list of statistically improbable
@@ -78,3 +80,117 @@ human to make the final decision.
 
 ##Instructions
 
+The assumption is that you have installed:
+* A HDP 1.3 [sandbox](http://hortonworks.com/products/hortonworks-sandbox/) sandbox started at $sandbox_ip.
+* [Apache Maven](http://maven.apache.org)
+* Some IDE which you prefer to develop Java code in (Eclipse or
+  Intellij, likely)
+
+### Getting the Code and setting up the Development Environment
+From the terminal, cd into the workspace of your choice and pull down
+the code for this project:
+  git clone https://github.com/cestella/NLPDemo.git
+  cd NLPDemo/NLPDemo
+
+Now, create your IDE metadata using maven for Eclipse:
+  mvn eclipse:eclipse -DdownloadSources -DdownloadJavadocs
+
+or Intellij:
+  mvn idea:idea -DdownloadSources -DdownloadJavadocs
+
+From there, import the project into your respective IDE as an existing
+Java project.  Note: You can also import the maven project directly.
+
+### Completing the Code
+
+Complete the following exercises:
+
+# The NLPUtil class is the main work-horse for the actual NLP work.  You
+can use this class to complete the Pig UDF GET_SIP, which emits a bag of
+tuples which are the statistically improbable pairs of words and their
+rank. 
+# (Bonus) The approach to find statistically improbable phrases uses
+  [Scaled Mutual
+Information](http://matpalm.com/blog/2011/10/22/collocations_1/).  There
+are a number of other approaches that might do better.  Investigate
+alternatives (hint: start
+[here](http://matpalm.com/blog/2011/11/05/collocations_2/) and
+[here](http://tdunning.blogspot.com/2008/03/surprise-and-coincidence.html)
+).
+# (Bonus) Expand to trigrams
+
+### Building the Project
+From the NLPDemo/NLPDemo directory:
+  mvn package
+
+This will bundle the scripts, data and jar file into
+NLPDemo-1.0-SNAPSHOT-archive.tar.gz in the target directory.
+We now need to upload this to the sandbox:
+  ssh root@$sandbox_ip "mkdir ~/nlpdemo"
+  scp target/NLPDemo-1.0-SNAPSHOT-archive.tar.gz root@$sandbox_ip:~/nlpdemo
+
+
+### Preparing the Data (needs to be done once)
+
+Now, ssh into the sandbox
+  ssh root@$sandbox_ip
+  cd ~/nlpdemo
+  tar xzvf NLPDemo-1.0-SNAPSHOT-archive.tar.gz
+  ./ingest.sh /user/root/nlp
+
+This will put the sentence data in /user/root/nlp/data
+
+### Running the Script
+
+Now, we need to execute the pig script which generates the statistically
+improbable phrases for each diagnosis code.
+
+From the sandbox in ~/nlpdemo/ directory
+  cd pig
+  pig -param input=nlp/data -param output=nlp/output ./statistically_improbable_phrases.pig
+  cd ..
+  hadoop fs -getmerge nlp/output sips.dat
+
+### Reviewing the Result
+
+Now, let's review some results by looking at the list of all diagnosis
+codes with their descriptions:
+  ./output_codes.sh ./sips.dat
+
+<pre>
+462 -- Acute pharyngitis
+486 -- Pneumonia, organism unspecified
+591 -- Hydronephrosis
+511.9 -- Unspecified pleural effusion
+518.0 -- Pulmonary collapse
+592.0 -- Calculus of kidney
+593.1 -- Hypertrophy of kidney
+593.5 -- Hydroureter
+...
+</pre>
+
+Now, pick one, say 486, and look at the summary:
+  ./code_summary.sh 486 ./sips.dat
+
+<pre>
+DIAG_CODE
+-----------------
+486
+
+DESCRIPTION
+=================
+Pneumonia, organism unspecified
+
+BIGRAMS w/ SCORE
+=================
+new leave 0.34979128651673214
+airspace  disease 0.3423211202104775
+disease describe  0.2653047668149281
+patient have  0.2556868154516419
+have  pneumonia 0.1711781778617873
+change  compare 0.12735461478754312
+pattern mycoplasma  0.11334434771136317
+have  change  0.10424970876887826
+hemidiaphragm heart 0.0808297520101521
+define  opacity 0.07441822992014914
+</pre>
