@@ -120,7 +120,7 @@ alternatives (hint: start
 [here](http://matpalm.com/blog/2011/11/05/collocations_2/) and
 [here](http://tdunning.blogspot.com/2008/03/surprise-and-coincidence.html)
 ).
-3. (Bonus) Expand to trigrams
+3. (Bonus) Right now we ignore all non-noun or verb words in sentences, but we might do better by ignoring a set of very common verbs (like 'be' or 'have').  Integrate a [stopword list](http://en.wikipedia.org/wiki/Stop_words) by implementing a Guava Predicate to be passed into NLPUtil.getStatisticallyImprobableBigrams() as the filter argument which filters out common verbs.
 
 ### Building the Project
 From the NLPDemo/NLPDemo directory:
