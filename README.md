@@ -69,5 +69,12 @@ phrases:
 <tr><td>define</td><td>opacity</td></tr>
 </table> 
 
+As you can see some of these phrases are spot on (i.e. mycoplasma is
+the type of bacteria which causes bacterial pneumonia), but some are
+too general.  This illustrates a key point: machine learning, data
+science and natural language processing can only take you so far and
+work best when their output is comprehensible *and* serves to assist a
+human to make the final decision.
+
 #Instructions
 
