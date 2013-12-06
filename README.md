@@ -157,8 +157,7 @@ improbable phrases for each diagnosis code.
 
 From the sandbox in ~/nlpdemo/ directory
 
-	cd pig
-	pig -param input=nlp/data -param output=nlp/output ./statistically_improbable_phrases.pig
+	pig -Dpig.additional.jars=./NLPDemo-1.0-SNAPSHOT.jar -param input=nlp/data -param output=nlp/output pig/statistically_improbable_phrases.pig
 	cd ..
 	hadoop fs -getmerge nlp/output sips.dat
 

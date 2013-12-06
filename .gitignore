@@ -6,3 +6,5 @@ training
 dependency-reduced-pom.xml
 *.ipr
 *.iws
+pigunit-input-overriden.txt
+.*

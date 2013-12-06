@@ -1,4 +1,3 @@
-register '../NLPDemo-1.0-SNAPSHOT.jar'
 DEFINE GET_SIP com.hortonworks.pig.GET_SIP;
 
 -- Load the documents from HDFS
@@ -10,6 +9,7 @@ SENTENCES = LOAD '$input' USING PigStorage('\u0001') as
 
 -- Grouped by diagnosis code
 CODE_GRP = group SENTENCES by diag_code;
+
 
 -- Create a relation, SIP with the following schema:
 --    diag_code: chararray
