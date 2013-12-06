@@ -126,6 +126,10 @@ alternatives (hint: start
 
 General hint: the remote branch `solution` contains my solution to 1 and 2.
 
+You will know that you have completed 1 and 2 when you are able to run
+the `StatisticallyImprobablePhrasesTest` (or do a `mvn clean package`,
+which runs the test).
+
 ### Building the Project
 From the NLPDemo/NLPDemo directory:
 
