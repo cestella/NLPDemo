@@ -16,11 +16,8 @@ CODE_GRP = group SENTENCES by diag_code;
 --    sips: bag: { left:chararray, right:chararray, score:double }
 -- where sips is the bag of statistically improbable bigrams
 
-SIP = foreach CODE_GRP {
-  -- Pull out the documents from the tuples
-  DOCS = foreach SENTENCES generate doc;
-  generate group as diag_code,GET_SIP(DOCS) as sips;
-};
+-- FILL ME IN!!!
+SIP = ...
 
 rmf $output
 STORE SIP into '$output' using PigStorage('\u0001');

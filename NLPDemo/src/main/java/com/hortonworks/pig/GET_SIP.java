@@ -88,13 +88,10 @@ public class GET_SIP extends EvalFunc<DataBag>
     )
     {
 
-        return
-        NLPUtil.getStatisticallyImprobableBigrams( listOfDocumentBigrams
-                                                 , Predicates.<Bigram<Word>>alwaysTrue()
-                                                 , bigramStatistics
-                                                 , unigramStatistics
-                                                 , scorer
-                                                 );
+       /*
+        *  FILL ME IN!!!!!
+        */
+        return null;
     }
     /**
      * This UDF takes in a tuple containing a bag of documents to compute the statistically
