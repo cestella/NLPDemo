@@ -108,6 +108,9 @@ Java project.  Note: You can also import the maven project directly.
 
 Complete the following exercises:
 
+0. Familiarize yourself with the methods in the NLPUtil class and what
+they do.  You will use them extensively in step 1. (Hint: you will
+re-use one of the functions in the solution for 1)
 1. The NLPUtil class is the main work-horse for the actual NLP work and heavily utilizes the [Stanford CoreNLP project](http://nlp.stanford.edu/software/corenlp.shtml).  You
 can use this class to complete the Pig UDF GET_SIP, which emits a bag of
 tuples representing the statistically improbable pairs of words and their
@@ -198,14 +201,14 @@ Pneumonia, organism unspecified
 
 BIGRAMS w/ SCORE
 =================
-new leave 0.34979128651673214
-airspace  disease 0.3423211202104775
-disease describe  0.2653047668149281
-patient have  0.2556868154516419
-have  pneumonia 0.1711781778617873
-change  compare 0.12735461478754312
-pattern mycoplasma  0.11334434771136317
-have  change  0.10424970876887826
-hemidiaphragm heart 0.0808297520101521
-define  opacity 0.07441822992014914
+new leave 0.5046421544038601
+airspace  disease 0.4938649825192107
+disease describe  0.3827538714080996
+patient have  0.3688781006727753
+have  pneumonia 0.24695790830960948
+change  compare 0.1837338711883127
+pattern mycoplasma  0.163521328355978
+have  change  0.15040053785497937
+hemidiaphragm heart 0.11661268238133117
+define  opacity 0.10736281125753386
 </pre>
