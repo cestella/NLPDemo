@@ -28,9 +28,14 @@ public class ScaledMutualInformationScorer implements Scorer
         double bigramFreq = bigramStatistics.getFrequency(bigram);
 
         // log_2( P(L, R) / (P(L) * P(R)) )
-        double mutualInformation = Math.log(
+        double mutualInformation = log_2(
                 bigramFreq / (unigramStatistics.getFrequency(bigram.getLeft()) * unigramStatistics.getFrequency(bigram.getRight()))
         );
         return mutualInformation*bigramFreq;
+    }
+
+    private static double log_2(double x)
+    {
+        return Math.log(x)/Math.log(2);
     }
 }

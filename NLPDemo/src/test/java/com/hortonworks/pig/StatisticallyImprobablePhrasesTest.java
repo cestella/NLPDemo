@@ -75,19 +75,9 @@ public class StatisticallyImprobablePhrasesTest
         System.getProperties().setProperty("mapred.reduce.child.java.opts","-Xmx1G");
         System.getProperties().setProperty("io.sort.mb","10");
         PigTest test = new PigTest("src/main/pig/statistically_improbable_phrases.pig", new String[] {"input=dummy", "output=dummy"});
-        String[] expectedOutput = new String[] {"(486,{(year,female,0.39481620520440197)" +
-                                                     ",(fever,day,0.33954362548961314)" +
-                                                     ",(chest,pain,0.27438228449145907)" +
-                                                     ",(cough,fever,0.20221708940609945)" +
-                                                     ",(rule,pneumonia,0.18261953201126263)" +
-                                                     ",(female,cough,0.16347154216862103)" +
-                                                     ",(male,fever,0.1536577385749652)" +
-                                                     ",(cough,chest,0.14835552438965083)" +
-                                                     ",(female,followup,0.1444302434880463)" +
-                                                     ",(year,month,0.11876091005899479)" +
-                                                     "}" +
-                                                ")"
-                                               };
+        String[] expectedOutput = new String[] { "(486,{(year,female,0.5695993813109901),(fever,day,0.48985790465932433),(chest,pain,0.39584996114361276),(cough,fever,0.2917375920691798),(rule,pneumonia,0.2634642932021119),(female,cough,0.2358395832131406),(male,fever,0.2216812574363151),(cough,chest,0.2140317793254309),(female,followup,0.2083687960345899),(year,month,0.171335775993572)})"
+
+        };
         test.assertOutput("SENTENCES", sentences, "SIP", expectedOutput);
     }
 
