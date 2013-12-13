@@ -109,8 +109,8 @@ Java project.  Note: You can also import the maven project directly.
 Complete the following exercises:
 
 0. Familiarize yourself with the methods in the NLPUtil class and what
-they do.  You will use them extensively in step 1. (Hint: you will
-re-use one of the functions in the solution for 1)
+they do.  You will use them extensively in next exercises. (Hint: you will
+re-use one of the functions in the solution for next exercise)
 1. The NLPUtil class is the main work-horse for the actual NLP work and heavily utilizes the [Stanford CoreNLP project](http://nlp.stanford.edu/software/corenlp.shtml).  You
 can use this class to complete the Pig UDF GET_SIP, which emits a bag of
 tuples representing the statistically improbable pairs of words and their
